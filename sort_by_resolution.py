@@ -203,11 +203,11 @@ def get_images(root_dir: str, is_recursive: bool) -> Dict:
             images.setdefault((width, height), []).append(path)
     return images        
 
-def move(target: str, dest: str):
-    print("move")
+def move(target: str, dest: str) -> None:
+    pass
 
-def copy(target: str, dest: str):
-    print("copy")
+def copy(target: str, dest: str) -> None:
+    pass
 
 def sort(input: str, output: str, is_copy: bool, recursive: bool) -> None:
     action = copy if is_copy else move
