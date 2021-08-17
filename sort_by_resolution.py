@@ -1,7 +1,13 @@
 import argparse
 from genericpath import isdir
 import os
+from typing import Dict
 from PIL import Image
+import re
+import glob
+
+BOLD = '\033[1m'
+BOLD_END = '\033[0m'
 
 default_resolutions = [
     (320, 480), 
@@ -84,20 +90,45 @@ default_resolutions = [
     (5120, 2880)
 ]
 
-def dir_path(path):
+valid_images_extensions = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".webp",
+    ".tiff",
+    ".psd",
+    ".raw",
+    ".bmp",
+    ".heif",
+    ".indd",
+    ".svg",
+    ".ai",
+    "eps"
+]
+
+def list_resolutions() -> None:
+    for resolution in default_resolutions:
+        print(f"{resolution[0]}x{resolution[1]}", end=" ")
+    print("\n")
+
+def dir_path(path: str) -> str:
     if(os.path.isdir(path)):
         return path
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
-def cmdline_args():
-    parser = argparse.ArgumentParser(description="Sort images by resolution by moving them to the appropriate subdirectories.")
+def cmdline_args() -> None:
+    parser = argparse.ArgumentParser(
+        description="Sort images by resolution by moving them to the appropriate subdirectories.")
     parser.add_argument(
-        "input", 
+        "-i",
+        "--input", 
         type=dir_path, 
         help="path to the directory with images")
     parser.add_argument(
-        "output", 
+        "-o",
+        "--output", 
         type=dir_path, 
         help="path to the root directory where the sorted images will be placed")
     parser.add_argument(
@@ -110,31 +141,110 @@ def cmdline_args():
         "--resolutions", 
         nargs="+", 
         type=str, 
-        help="resolution list, all images with a different resolution than specified will be placed in the directory others.")
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument(
-        "-m", 
-        "--move", 
-        action="store_true", 
-        help="sorted images will be moved to the new location")
-    group.add_argument(
+        help=f"""override default resolution list. 
+        Resolution format {BOLD}width{BOLD_END}x{BOLD}height{BOLD_END} 
+        for e.g. 1920x1080""")
+    parser.add_argument(
+        "-a",
+        "--append",
+        nargs="+", 
+        type=str,
+        help=f"""append resolutions to default resolution list. 
+        Resolution format {BOLD}width{BOLD_END}x{BOLD}height{BOLD_END} 
+        for e.g. 1920x1080""")
+    parser.add_argument(
+        "-e",
+        "--exclude",
+        nargs="+",
+        type=str,
+        help=f"""exclude resolutions from default resolution list. 
+        Resolution format {BOLD}width{BOLD_END}x{BOLD}height{BOLD_END} 
+        for e.g. 1920x1080""")
+    parser.add_argument(
         "-c", 
         "--copy", 
         action="store_true", 
         help="sorted images will be copied to the new location")
+    parser.add_argument(
+        "-l",
+        "--list",
+        action="store_true", 
+        help="list all default resolutions"
+    )
     
     return parser.parse_args()
 
+def resolve_resolution(args: list) -> list:
+    resolutions = []
+
+    pattern = re.compile("^\d+x\d+$")
+
+    for arg in args:
+        if not pattern.match(arg):
+            raise ValueError(f"{arg} <- Incorrect resolution format")
+        
+        width, height = re.split("x", arg)
+        resolutions.append((width, height))
+
+    return resolutions
+
+def is_image(path: str) -> bool:
+    for extension in valid_images_extensions:
+        if path.endswith(extension):
+            return True
+    return False
+
+def get_images(root_dir: str, is_recursive: bool) -> Dict:
+    images = {}
+
+    for path in glob.iglob(root_dir + '**', recursive=is_recursive):
+        if is_image(path):
+            width, height = Image.open(path).size
+            images.setdefault((width, height), []).append(path)
+    return images        
+
+def move(target: str, dest: str):
+    print("move")
+
+def copy(target: str, dest: str):
+    print("copy")
+
+def sort(input: str, output: str, is_copy: bool, recursive: bool) -> None:
+    action = copy if is_copy else move
+
 def main():
+    input = "./"
+    output = "./"
+    is_copy = False
+    recursive = False
+
     args = cmdline_args()
 
+    if args.input:
+        input = args.input
+
+    if args.output:
+        output = args.output
+
     if args.recursive:
-        pass
+        recursive = True
+
+    if args.copy:
+        is_copy = True
 
     if args.resolutions:
-        pass
+        default_resolutions = resolve_resolution(args.resolutions)
 
-    if args.move:
-        pass
+    if args.append:
+        new_resolutions = resolve_resolution(args.append)
+        default_resolutions = list(set(default_resolutions + new_resolutions))
+
+    if args.exclude:
+        new_resolutions = resolve_resolution(args.exclude)
+        default_resolutions = list(set(default_resolutions) - set(new_resolutions))
+
+    if args.list:
+        list_resolutions()
+        exit(0)
 
 main()
