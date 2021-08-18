@@ -26,17 +26,26 @@ BOLD = '\033[1m'
 BOLD_END = '\033[0m'
 
 def list_resolutions() -> None:
+    """
+    List resolutions from default_resolutions list
+    """
     for resolution in default_resolutions:
         print(f"{resolution[0]}x{resolution[1]}", end=" ")
     print("\n")
 
 def dir_path(path: str) -> str:
+    """
+    Check if path is a directory
+    """
     if(os.path.isdir(path)):
         return path
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
 def cmdline_args() -> None:
+    """
+    Initializing argparser
+    """
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
@@ -94,6 +103,11 @@ def cmdline_args() -> None:
     return parser.parse_args()
 
 def resolve_resolution(args: list) -> list:
+    """
+    Checks that the provided arguments are resolutions and transforms them into 
+    list of resolutions in a format that corresponds to the default_resolutions
+    list.
+    """
     resolutions = []
     pattern = re.compile("^\d+x\d+$")
 
@@ -107,6 +121,9 @@ def resolve_resolution(args: list) -> list:
     return resolutions
 
 def is_image(path: str) -> bool:
+    """
+    Check if path is image
+    """
     for extension in valid_images_extensions:
         if path.endswith(extension):
             return True
@@ -114,6 +131,11 @@ def is_image(path: str) -> bool:
     return False
 
 def get_images(root_dir: str, is_recursive: bool) -> dict:
+    """
+    Returns dictionary which maps resolution to list of path to images with 
+    from this resolution from provided directory and, if recursive is enabled, 
+    from subdirectorys.
+    """
     images = {}
 
     for path in glob.iglob(root_dir + '**', recursive=is_recursive):
@@ -128,11 +150,17 @@ def get_images(root_dir: str, is_recursive: bool) -> dict:
     return images        
 
 def create_dirs(root_dir: str, to_create: list) -> None:
+    """
+    Creates subdirectorys in destination directory
+    """
     for dir in to_create:
         dir_path = os.path.join(root_dir, dir)
         os.makedirs(dir_path, exist_ok=True)
 
 def sort(src_root_dir: str, dest_root_dir: str, is_copy: bool, recursive: bool) -> None:
+    """
+    Sorting images.
+    """
     action = shutil.copyfile if is_copy else shutil.move
     
     images = get_images(src_root_dir, recursive)
@@ -145,6 +173,8 @@ def sort(src_root_dir: str, dest_root_dir: str, is_copy: bool, recursive: bool) 
             action(image_path, dest_path)
 
 def main():
+    global default_resolutions
+
     src_dir = "./"
     dest_dir = "./"
     is_copy = False
