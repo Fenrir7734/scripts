@@ -133,8 +133,8 @@ def is_image(path: str) -> bool:
 def get_images(root_dir: str, is_recursive: bool) -> dict:
     """
     Returns dictionary which maps resolution to list of path to images with 
-    from this resolution from provided directory and, if recursive is enabled, 
-    from subdirectorys.
+    this resolution from provided directory and, if recursive is enabled, 
+    from subdirectories.
     """
     images = {}
 
@@ -151,7 +151,7 @@ def get_images(root_dir: str, is_recursive: bool) -> dict:
 
 def create_dirs(root_dir: str, to_create: list) -> None:
     """
-    Creates subdirectorys in destination directory
+    Creates subdirectories in destination directory
     """
     for dir in to_create:
         dir_path = os.path.join(root_dir, dir)
