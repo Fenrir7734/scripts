@@ -42,7 +42,7 @@ def dir_path(path: str) -> str:
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
-def cmdline_args() -> None:
+def cmdline_args() -> argparse.Namespace:
     """
     Initializing argparser
     """
