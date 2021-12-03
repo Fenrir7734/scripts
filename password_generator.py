@@ -1,4 +1,3 @@
-from random import shuffle
 import string
 import argparse
 import secrets
@@ -70,7 +69,6 @@ def create_alphabet(args: argparse.Namespace) -> str:
     return alphabet
 
 def generate_passwd(alphabet: str, n: int) -> None:
-    alphabet = shuffle(alphabet)
     passwd = "".join(secrets.choice(alphabet) for i in range(n))
     print(passwd)
 
