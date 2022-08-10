@@ -113,14 +113,14 @@ def resolve_resolution(args: list) -> list:
     list.
     """
     resolutions = []
-    pattern = re.compile("^\d+x\d+$")
+    pattern = re.compile("^\\d+x\\d+$")
 
     for arg in args:
         if not pattern.match(arg):
             raise argparse.ArgumentTypeError(f"{arg} <- Incorrect resolution format")
 
         width, height = re.split("x", arg)
-        resolutions.append((width, height))
+        resolutions.append((int(width), int(height)))
 
     return resolutions
 
