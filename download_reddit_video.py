@@ -49,12 +49,12 @@ def make_request(url: str) -> requests.Response:
 
 def download_file(url: str, out_file_name: str) -> None:
     res = requests.get(url, headers=USER_AGENT_HEADER, stream=True)
-    with open(out_file_name, 'wb') as f:
+    with open(out_file_name, 'wb') as file:
         pbar = tqdm(unit="B", total=int(res.headers['Content-Length']))
         for chunk in res.iter_content(chunk_size=1024):
             if chunk:
                 pbar.update(len(chunk))
-                f.write(chunk)
+                file.write(chunk)
 
 
 def is_video(json_data) -> bool:
