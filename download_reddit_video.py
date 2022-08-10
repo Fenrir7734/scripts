@@ -9,8 +9,7 @@ USER_AGENT_HEADER = {"User-agent": "Mozilla/5.0"}
 
 
 def download(reddit_post_url: str) -> None:
-    reddit_post_url = to_json_url(reddit_post_url)
-    res = make_request(reddit_post_url)
+    res = make_request(reddit_post_url + ".json")
     json_data = json.loads(res.text)
 
     if not is_video(json_data):
@@ -36,19 +35,14 @@ def download(reddit_post_url: str) -> None:
     os.remove(audio_title)
 
 
-def to_json_url(url: str) -> str:
-    url.strip()
-    return url + ".json"
-
-
 def make_request(url: str) -> requests.Response:
     res = requests.get(url, headers=USER_AGENT_HEADER)
 
-    if res.status_code == 404:
-        print("Not found")
-        sys.exit()
+    if res.status_code == 200:
+        return res
 
-    return res
+    print(f"Failed to download video. Http status code: {res.status_code}")
+    sys.exit()
 
 
 def is_video(json_data) -> bool:
