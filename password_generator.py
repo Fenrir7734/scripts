@@ -13,9 +13,9 @@ def cmdline_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "-l",
-        "--lenght",
+        "--length",
         type=int,
-        help="password lenght")
+        help="password length")
     parser.add_argument(
         "-d",
         "--define",
@@ -68,7 +68,7 @@ def create_alphabet(args: argparse.Namespace) -> str:
 
     if args.define:
         if alphabet:
-            print("-d option cannot be combined with " \
+            print("-d option cannot be combined with "
                   "any of the following options: -L -U -N -S")
             exit(0)
         alphabet = args.define
@@ -78,15 +78,15 @@ def create_alphabet(args: argparse.Namespace) -> str:
     return alphabet
 
 
-def get_passwd_lenght(args: argparse.Namespace) -> int:
-    if not args.lenght:
+def get_passwd_length(args: argparse.Namespace) -> int:
+    if not args.length:
         return 16
     number = args.lenght
     if number <= 0:
         print("Incorrect password lenght")
         exit(0)
     if number < 8:
-        print("Recommended password lenght is at least 8 characters. " \
+        print("Recommended password lenght is at least 8 characters. "
               "For password of lenght smaller than 8 password policy is disabled.")
     return number
 
@@ -120,7 +120,7 @@ def check_password(passwd: str, alphabet: str) -> bool:
 
 def generate_passwd(alphabet: str, n: int) -> str:
     while True:
-        passwd = "".join(secrets.choice(alphabet) for i in range(n))
+        passwd = "".join(secrets.choice(alphabet) for _ in range(n))
         if check_password(passwd, alphabet):
             return passwd
 
@@ -128,8 +128,8 @@ def generate_passwd(alphabet: str, n: int) -> str:
 def main() -> None:
     args = cmdline_args()
     alphabet = create_alphabet(args)
-    lenght = get_passwd_lenght(args)
-    passwd = generate_passwd(alphabet, lenght)
+    length = get_passwd_length(args)
+    passwd = generate_passwd(alphabet, length)
 
     if args.copy:
         pyperclip.copy(passwd)
