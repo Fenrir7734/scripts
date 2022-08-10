@@ -39,7 +39,7 @@ def dir_path(path: str) -> str:
     """
     Check if path is a directory
     """
-    if (os.path.isdir(path)):
+    if os.path.isdir(path):
         return path
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
@@ -156,7 +156,7 @@ def get_images(root_dir: str, is_recursive: bool) -> dict:
     return images
 
 
-def create_dirs(root_dir: str, to_create: list) -> None:
+def create_dirs(root_dir: str, to_create: dict.keys) -> None:
     """
     Creates subdirectories in destination directory
     """
