@@ -37,10 +37,11 @@ def list_resolutions() -> None:
 
 def dir_path(path: str) -> str:
     """
-    Check if path is a directory
+    Check if path is a directory and appends slash to end of it if it is not
+    already there.
     """
     if os.path.isdir(path):
-        return path
+        return path + "/" if not path.endswith("/") else path
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
