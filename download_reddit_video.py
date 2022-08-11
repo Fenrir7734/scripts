@@ -35,6 +35,7 @@ def download(reddit_post_url: str) -> None:
 
     os.remove(video_title)
     os.remove(audio_title)
+    print(f"File saved as {output_title}")
 
 
 def make_request(url: str) -> requests.Response:
@@ -50,7 +51,7 @@ def make_request(url: str) -> requests.Response:
 def download_file(url: str, out_file_name: str) -> None:
     res = requests.get(url, headers=USER_AGENT_HEADER, stream=True)
     with open(out_file_name, 'wb') as file:
-        pbar = tqdm(unit="B", total=int(res.headers['Content-Length']))
+        pbar = tqdm(total=int(res.headers['Content-Length']), unit="B", unit_scale=True)
         for chunk in res.iter_content(chunk_size=1024):
             if chunk:
                 pbar.update(len(chunk))
