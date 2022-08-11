@@ -18,7 +18,7 @@ def get_books_list() -> list:
     sys.exit()
 
 
-def make_out_dir():
+def make_out_dir() -> None:
     if os.path.exists(OUT_DIR):
         res = input(f"{OUT_DIR} already exists. Override it? (Y/n) ")
 
@@ -31,13 +31,13 @@ def make_out_dir():
     os.makedirs(OUT_DIR)
 
 
-def clear_lines(count: int):
+def clear_lines(count: int) -> None:
     for _ in range(count):
         sys.stdout.write("\033[F")
         sys.stdout.write("\033[K")
 
 
-def download_book(url: str):
+def download_book(url: str) -> None:
     res = requests.get(url, stream=True)
     book_name = res.url.split("/")[-1]
 
@@ -53,7 +53,7 @@ def download_book(url: str):
     clear_lines(2)
 
 
-def main():
+def main() -> None:
     make_out_dir()
     book_list = get_books_list()
 

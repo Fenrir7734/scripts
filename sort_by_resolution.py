@@ -182,7 +182,7 @@ def sort(src_root_dir: str, dest_root_dir: str, is_copy: bool, recursive: bool) 
             action(image_path, dest_path)
 
 
-def main():
+def main() -> None:
     global default_resolutions
 
     src_dir = "./"
