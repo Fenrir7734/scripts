@@ -5,10 +5,11 @@ import requests
 from tqdm import tqdm
 
 OUT_DIR = "./ligman_books"
+BOOKS_URL = "http://ligman.me/2sZVmcG"
 
 
 def get_books_list() -> list:
-    res = requests.get("http://ligman.me/2sZVmcG")
+    res = requests.get(BOOKS_URL)
 
     if res.status_code == 200:
         return list(res.iter_lines(decode_unicode=True))[1:]
