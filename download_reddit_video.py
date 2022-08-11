@@ -61,7 +61,7 @@ def download_file(url: str, out_file_name: str) -> str:
     """
     res = requests.get(url, headers=USER_AGENT_HEADER, stream=True)
 
-    extension = res.headers.get("Content-Type")[6:]
+    extension = res.headers["Content-Type"][6:]
     out_file_name += "." + extension
 
     with open(out_file_name, 'wb') as file:
