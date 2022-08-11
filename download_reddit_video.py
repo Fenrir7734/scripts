@@ -10,6 +10,9 @@ USER_AGENT_HEADER = {"User-agent": "Mozilla/5.0"}
 
 
 def download(reddit_post_url: str) -> None:
+    """
+    Downloads video and audio from reddit and then merge it into single file.
+    """
     res = make_request(reddit_post_url + ".json")
     json_data = json.loads(res.text)
 
@@ -39,6 +42,9 @@ def download(reddit_post_url: str) -> None:
 
 
 def make_request(url: str) -> requests.Response:
+    """
+    Makes HTTP requests and returns response.
+    """
     res = requests.get(url, headers=USER_AGENT_HEADER)
 
     if res.status_code == 200:
@@ -49,6 +55,10 @@ def make_request(url: str) -> requests.Response:
 
 
 def download_file(url: str, out_file_name: str) -> str:
+    """
+    Downloads file and prints progress bar. Function takes url to file and
+    filename. Returns filename with its extension.
+    """
     res = requests.get(url, headers=USER_AGENT_HEADER, stream=True)
 
     extension = res.headers.get("Content-Type")[6:]
@@ -65,18 +75,33 @@ def download_file(url: str, out_file_name: str) -> str:
 
 
 def is_video(json_data) -> bool:
+    """
+    Checks if Reddit post contains video. Videos can't be put in gallery so
+    there is no need to check other elements of children array.
+    """
     return get_post_data(json_data)["is_video"]
 
 
 def get_post_data(json_data):
+    """
+    Gets post data. If there is video it has to be first element of the array.
+    """
     return json_data[0]["data"]["children"][0]["data"]
 
 
 def get_video_url(json_data) -> str:
+    """
+    Gets url of the video from Reddit post.
+    """
     return get_post_data(json_data)["media"]["reddit_video"]["fallback_url"]
 
 
 def get_audio_url(json_data) -> str:
+    """
+    Gets url of the video's audio. Reddit stores video and audio separately so
+    downloading only video will result in video with no sound. To get
+    audio, DASH_xxx in url have to be replaced by DASH_audio.
+    """
     video_url = get_video_url(json_data)
     return re.sub("DASH_.*?(?=\\.)", "DASH_audio", video_url)
 
