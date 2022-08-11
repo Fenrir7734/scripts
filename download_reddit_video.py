@@ -19,18 +19,18 @@ def download(reddit_post_url: str) -> None:
 
     print("\nDownloading video file...")
     video_url = get_video_url(json_data)
-    video_title = get_post_name(json_data) + "_video.mp4"
-    download_file(video_url, video_title)
+    video_title = get_post_name(json_data) + "_video"
+    video_title = download_file(video_url, video_title)
 
     print("\nDownloading audio file...")
     audio_url = get_audio_url(json_data)
-    audio_title = get_post_name(json_data) + "_audio.mp4"
-    download_file(audio_url, audio_title)
+    audio_title = get_post_name(json_data) + "_audio"
+    audio_title = download_file(audio_url, audio_title)
 
     print("\nMerging video and audio...")
     input_video = ffmpeg.input(video_title)
     input_audio = ffmpeg.input(audio_title)
-    output_title = get_post_name(json_data) + ".mp4"
+    output_title = get_post_name(json_data) + video_title[video_title.rfind("."):]
     ffmpeg.concat(input_video, input_audio, v=1, a=1).output(output_title, loglevel="quiet").run()
 
     os.remove(video_title)
@@ -48,14 +48,20 @@ def make_request(url: str) -> requests.Response:
     sys.exit()
 
 
-def download_file(url: str, out_file_name: str) -> None:
+def download_file(url: str, out_file_name: str) -> str:
     res = requests.get(url, headers=USER_AGENT_HEADER, stream=True)
+
+    extension = res.headers.get("Content-Type")[6:]
+    out_file_name += "." + extension
+
     with open(out_file_name, 'wb') as file:
         pbar = tqdm(total=int(res.headers['Content-Length']), unit="B", unit_scale=True)
         for chunk in res.iter_content(chunk_size=1024):
             if chunk:
                 pbar.update(len(chunk))
                 file.write(chunk)
+
+    return out_file_name
 
 
 def is_video(json_data) -> bool:
