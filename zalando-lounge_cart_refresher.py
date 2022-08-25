@@ -32,6 +32,14 @@ WAIT_TIME = 1800  # 30min because why not?
 def refresh(driver: webdriver) -> None:
     while True:
         try:
+            # The button we are interested in has nested <span> tag that has id
+            # attribute, so it would be easier to just get parent of this
+            # <span> tag, but as it turns out, this id is automatically
+            # generated probably by whatever framework Zalando is using,
+            # so we can't depend on it. But button that we want to grab
+            # has sibling <a> tag with href attribute that never changes. So
+            # we grab that <a> tag by its href attribute, then that tag's
+            # parent, and finally our button.
             btn = WebDriverWait(driver, WAIT_TIME).until(
                 EC.element_to_be_clickable(
                     (By.XPATH, '//a[contains(@href, "/checkout/")]/../button')))
