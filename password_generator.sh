@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$1" && $1 = "-h" ]]; then
+if [[ "$1" = "-h" ]]; then
     echo -e "
 password_generator.sh [LENGTH] [ALPHABET] [COUNT]
 
@@ -17,6 +17,7 @@ password_generator.sh [LENGTH] [ALPHABET] [COUNT]
 fi
 
 LENGTH=${1:-10}
+ALPHABET="[:alnum:]"
 
 case $2 in
     "alnum"|"alpha"|"digit")
@@ -25,15 +26,12 @@ case $2 in
     "punct")
         ALPHABET="[:alnum:][:punct:]"
         ;;
-    *)
-        ALPHABET="[:alnum:]"
-        ;;
 esac
 
 COUNT=${3:-1}
 
-for (( i=0; i<=$COUNT; i++ ))
+for (( i=0; i<$COUNT; i++ ))
 do
     tr -cd $ALPHABET </dev/urandom | head -c$LENGTH
-    echo -e \n
+    echo
 done
