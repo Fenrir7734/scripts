@@ -1,5 +1,5 @@
 # Scripts
-A collection of simple Python scripts, made mostly for fun.
+A collection of simple scripts, made mostly for fun.
 
 | Project Name                                                                                                      | Description                                                  |
 |-------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
